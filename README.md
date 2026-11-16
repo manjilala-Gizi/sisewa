@@ -96,3 +96,5 @@ slotnya otomatis terbuka lagi.
 - Biaya tambahan dihitung sekali per pesanan (belum per jam atau per hari).
 - Belum ada notifikasi WhatsApp otomatis; admin menekan tombol **WA penyewa** secara manual.
 - Siapa pun yang memegang kode pesanan bisa melihat detail pesanan tersebut.
+- Pencarian "lupa kode" hanya memakai nomor WhatsApp, jadi orang yang tahu nomor penyewa bisa melihat
+  pesanan 30 hari terakhir milik nomor itu.

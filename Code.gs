@@ -99,6 +99,17 @@ const RUTE = {
     return b;
   },
 
+  // Lupa kode: cari pesanan 30 hari terakhir berdasarkan nomor WhatsApp pemesan (maks. 10)
+  cariHp: function (req) {
+    const hp = hpKe62(req.hp);
+    if (hp.length < 10) throw new Error('Nomor WhatsApp tidak valid.');
+    const batas = Utilities.formatDate(new Date(Date.now() - 30 * 86400000), TZ, 'yyyy-MM-dd');
+    return bacaSheet(SH.B)
+      .filter(function (b) { return hpKe62(b.hp) === hp && b.tanggal_selesai >= batas; })
+      .reverse().slice(0, 10)
+      .map(function (b) { delete b.hp; return b; });
+  },
+
   booking: function (req) {
     const x = req.data || {};
     const lock = LockService.getScriptLock();
