@@ -8,5 +8,5 @@
  * Contoh: 'https://script.google.com/macros/s/AKfycb.........../exec'
  */
 window.SISEWA_CONFIG = {
-  API_URL: ''
+  API_URL: 'https://script.google.com/macros/s/AKfycbx78T0nfr1oWdaftSPCAtAUD2b16q6mHE-ocjk8JqtKHe_iQxo5mPagqJQPTrA4n3KJ0A/exec'
 };
