@@ -101,7 +101,8 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid v
 .st.Ditolak,.st.Batal{background:#fee2e2;color:#991b1b}
 .ticket{max-width:520px;margin:0 auto;text-align:center}
 .kode{font-size:28px;font-weight:800;letter-spacing:2px;color:var(--teal-d);margin:6px 0 2px}
-#qr{display:inline-block;padding:10px;background:#fff;border:1px solid var(--line);border-radius:12px;margin:12px 0}
+.qrisbox{text-align:center;margin-top:10px;padding-top:10px;border-top:1px dashed #99f6e4}
+.qrisbox img{width:100%;max-width:260px;height:auto;border-radius:10px;border:1px solid var(--line);background:#fff}
 .kv{text-align:left;font-size:14px;margin-top:8px}
 .kv div{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px dashed var(--line)}
 .kv div span:first-child{color:var(--mute);flex:none}
@@ -163,7 +164,6 @@ nav.bot a.on{color:var(--teal)}
 <div id="load"><div class="spin" aria-label="Memuat"></div></div>
 
 <script src="config.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <script>
 'use strict';
 /* =========================================================
@@ -520,13 +520,13 @@ function halTiket(b, baru) {
   const hpSaya = simpanan ? String(simpanan.hp || '') : '';
   const pesanSaya = 'TIKET SISEWA\nKode: ' + b.kode + '\nFasilitas: ' + b.fasilitas + '\nWaktu: ' + waktuPesanan(b) + '\nTotal: ' + rp(b.total) + '\nStatus saat disimpan: ' + b.status + '\n\nCek status terbaru di sini:\n' + tautanCek(b.kode);
   let panduan = '';
-  if (perluBayar) panduan = '<ol class="langkah"><li><b>Simpan tiket ini</b> lewat tombol "Simpan ke WhatsApp saya".</li><li><b>Transfer</b> sebesar ' + rp(b.total) + ' ke rekening di bawah.</li><li><b>Kirim bukti</b> lewat tombol "Kirim bukti via WhatsApp".</li><li><b>Tunggu konfirmasi admin.</b> Status akan berubah menjadi <b>Lunas</b>; cek kapan saja di menu Cek Pesanan.</li><li><b>Tunjukkan kode atau QR</b> ini kepada petugas saat datang.</li></ol>';
-  else if (b.status === 'Lunas') panduan = '<div class="infobox">✅ <b>Pembayaran sudah diterima.</b> Tunjukkan kode atau QR ini kepada petugas saat datang.</div>';
+  if (perluBayar) panduan = '<ol class="langkah"><li><b>Simpan tiket ini</b> lewat tombol "Simpan ke WhatsApp saya".</li><li><b>Bayar</b> sebesar ' + rp(b.total) + ' sesuai info pembayaran di bawah.</li><li><b>Kirim bukti</b> lewat tombol "Kirim bukti via WhatsApp".</li><li><b>Tunggu konfirmasi admin.</b> Status akan berubah menjadi <b>Lunas</b>; cek kapan saja di menu Cek Pesanan.</li><li><b>Tunjukkan kode pesanan</b> ini kepada petugas saat datang.</li></ol>';
+  else if (b.status === 'Lunas') panduan = '<div class="infobox">✅ <b>Pembayaran sudah diterima.</b> Tunjukkan kode pesanan ini kepada petugas saat datang.</div>';
   else if (b.status === 'Selesai') panduan = '<div class="infobox">Pesanan ini sudah selesai dipakai. Terima kasih.</div>';
   else panduan = '<div class="warn" style="text-align:left">Pesanan ini tidak aktif (' + esc(b.status) + ').' + (b.catatan ? ' Lihat catatan admin di bawah.' : '') + ' Silakan buat pesanan baru bila masih diperlukan.</div>';
   app.innerHTML =
     '<div class="card pad ticket">' + (baru ? '<div style="font-size:40px">✅</div><h1 style="font-size:20px">Pesanan terkirim</h1><p class="note">Tiket ini otomatis tersimpan di menu Cek Pesanan pada perangkat ini.</p>' : '<h1 style="font-size:20px">Detail pesanan</h1>') +
-    '<div class="kode">' + esc(b.kode) + '</div><span class="st ' + esc(b.status) + '">' + esc(b.status) + '</span><br><div id="qr"></div>' +
+    '<div class="kode">' + esc(b.kode) + '</div><span class="st ' + esc(b.status) + '">' + esc(b.status) + '</span>' +
     panduan +
     '<div class="kv">' +
       '<div><span>Fasilitas</span><span>' + esc(b.fasilitas) + '</span></div>' +
@@ -537,13 +537,14 @@ function halTiket(b, baru) {
       '<div><span>Total</span><span>' + rp(b.total) + '</span></div>' +
       (b.catatan ? '<div><span>Catatan admin</span><span>' + esc(b.catatan) + '</span></div>' : '') +
     '</div>' +
-    (perluBayar && S.config.info_rekening ? '<div class="sum" style="text-align:left"><b>Pembayaran</b><br>' + esc(S.config.info_rekening) + '</div>' : '') +
+    (perluBayar ? '<div class="sum" style="text-align:left"><b>Pembayaran</b>' + (S.config.info_rekening ? '<br>' + esc(S.config.info_rekening) : '') +
+      // QRIS: tampil otomatis bila ada berkas qris.png di folder aplikasi; bila tidak ada, bagian ini hilang sendiri
+      '<div class="qrisbox"><b>Atau scan QRIS</b><br><img src="qris.png" alt="Kode QRIS pembayaran" onerror="this.parentNode.remove()"><div class="note">Masukkan nominal <b>' + rp(b.total) + '</b> saat membayar.</div></div></div>' : '') +
     '<div class="acts" style="justify-content:center">' +
       (wa && perluBayar ? '<a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/' + wa + '?text=' + encodeURIComponent(pesan) + '">Kirim bukti via WhatsApp</a>' : '') +
       '<a class="btn ghost" target="_blank" rel="noopener" href="https://wa.me/' + esc(hpSaya) + '?text=' + encodeURIComponent(pesanSaya) + '">Simpan ke WhatsApp saya</a>' +
       '<button class="btn ghost" onclick="window.print()">Cetak</button><button class="btn ghost" onclick="ke(\'#/\')">Selesai</button></div>' +
     (hpSaya ? '' : '<p class="note">Tombol "Simpan ke WhatsApp saya" akan membuka WhatsApp; pilih nomor Anda sendiri sebagai tujuan.</p>') + '</div>';
-  try { if (window.QRCode) new QRCode($('#qr'), { text: tautanCek(b.kode), width: 132, height: 132, correctLevel: QRCode.CorrectLevel.M }); else $('#qr').remove(); } catch (e) { const q = $('#qr'); if (q) q.remove(); }
 }
 function barisPesanan(x, hapus) {
   return '<div class="item"><div class="head"><div><h3>' + esc(x.fasilitas) + '</h3><div class="meta">' + esc(x.waktu) + '<br>Kode ' + esc(x.kode) + '</div></div><span class="st ' + esc(x.status) + '">' + esc(x.status) + '</span></div>' +

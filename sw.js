@@ -1,6 +1,6 @@
 /* Service worker SiSewa: menyimpan tampilan aplikasi agar cepat dibuka & bisa dipasang di HP.
    Naikkan angka VERSI setiap kali mengunggah perubahan ke GitHub. */
-const VERSI = 'sisewa-v3';
+const VERSI = 'sisewa-v4';
 const BERKAS = ['./', './index.html', './config.js', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {

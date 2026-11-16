@@ -58,6 +58,12 @@ Setiap kali `Code.gs` diubah, buat versi baru lewat
 Setelah mengunggah perubahan, naikkan angka `VERSI` di `sw.js` (misalnya `sisewa-v2`)
 supaya HP pengguna mengambil versi terbaru.
 
+## Menampilkan QRIS
+
+Simpan gambar QRIS resmi Unit Bisnis dengan nama persis `qris.png`, lalu unggah ke folder yang sama
+dengan `index.html` di GitHub. Gambar itu otomatis muncul di kotak Pembayaran pada tiket.
+Selama berkas `qris.png` tidak ada, bagian QRIS tidak ditampilkan.
+
 ## Cara mengisi sheet Fasilitas
 
 | Kolom | Isi |
